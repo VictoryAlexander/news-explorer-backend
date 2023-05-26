@@ -14,3 +14,7 @@ The project features seperate file structures through modeling, controllers, mid
 It also features user routing with authorization, signup and signin features. Users have the ability to save news articles from the news search api onto their databases.
 
 ## Domain Names
+
+news-explorer.hbmc.net
+www.news-explorer.hbmc.net
+api.news-explorer.hbmc.net
