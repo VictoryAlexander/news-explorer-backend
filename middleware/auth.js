@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const UnauthorizedError = require('../utils/errors/UnauthorizedError');
+const { privateKey } = require('../utils/config');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
 
@@ -18,7 +19,7 @@ module.exports = (req, res, next) => {
   let payload;
 
   try {
-    payload = jwt.verify(token, NODE_ENV === 'production' ? JWT_SECRET : 'HE DOESNT KNOW');
+    payload = jwt.verify(token, NODE_ENV === 'production' ? JWT_SECRET : privateKey);
   } catch (err) {
     return next(authorizationError);
   }

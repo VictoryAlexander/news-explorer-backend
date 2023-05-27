@@ -8,11 +8,12 @@ const routes = require('./routes');
 const limiter = require('./middleware/rateLimiter');
 const errorHandler = require('./middleware/errorHandler');
 const { requestLogger, errorLogger } = require('./middleware/logger');
+const { mongoServerAddress } = require('./utils/config');
 
 const app = express();
 const { PORT = 3000 } = process.env;
 
-mongoose.connect('mongodb://127.0.0.1:27017/news-explorer_db');
+mongoose.connect(mongoServerAddress);
 
 app.use(helmet());
 app.use(cors());

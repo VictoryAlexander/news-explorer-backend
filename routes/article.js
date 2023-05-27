@@ -3,7 +3,7 @@ const { getArticles, createArticle, deleteArticle } = require('../controllers/ar
 const auth = require('../middleware/auth');
 const { validateNewArticle, validateArticleId } = require('../middleware/validation');
 
-router.get('/articles', getArticles);
+router.get('/articles', auth, getArticles);
 router.post('/articles', auth, validateNewArticle, createArticle);
 router.delete('/articles/:articleId', auth, validateArticleId, deleteArticle);
 

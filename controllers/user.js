@@ -6,8 +6,10 @@ const BadRequestError = require('../utils/errors/BadRequestError');
 const ConflictError = require('../utils/errors/ConflictError');
 const NotFoundError = require('../utils/errors/NotFoundError');
 const UnauthorizedError = require('../utils/errors/UnauthorizedError');
+const privateKey = require('../utils/config');
+const { defaultErrorMessage, userNotFoundMessage, invalidIdMessage, userExistsMessage, invalidAccessMessage } = require('../utils/constants');
 
-const defaultError = new ServerError('An error has occurred on the server.');
+const defaultError = new ServerError(defaultErrorMessage);
 const { NODE_ENV, JWT_SECRET } = process.env;
 
 module.exports.getUsers = (req, res, next) => {
@@ -20,13 +22,13 @@ module.exports.getCurrentUser = (req, res, next) => {
   user.findById(req.user._id)
     .then((userInfo) => {
       if (!userInfo) {
-        return next(new NotFoundError("User not found"));
+        return next(new NotFoundError(userNotFoundMessage));
       }
       return res.send({ userInfo });
     })
     .catch((err) => {
       if (err.name === "CastError") {
-        next(new BadRequestError("Invalid user id"));
+        next(new BadRequestError(invalidIdMessage));
       } else {
         next(defaultError);
       }
@@ -49,9 +51,9 @@ module.exports.createUser = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === "ValidationError") {
-        next(new BadRequestError("Invalid user id"));
+        next(new BadRequestError(invalidIdMessage));
       } else if(err.code === 11000) {
-        next(new ConflictError('User Already Exists'));
+        next(new ConflictError(userExistsMessage));
       } else {
         next(defaultError);
       }
@@ -63,12 +65,12 @@ module.exports.login = (req, res, next) => {
   
   return user.findUserByCredentials(email, password)
     .then((userInfo) => {
-      const token = jwt.sign({ _id: userInfo._id }, NODE_ENV === 'production' ? JWT_SECRET : 'HE DOESNT KNOW', {
+      const token = jwt.sign({ _id: userInfo._id }, NODE_ENV === 'production' ? JWT_SECRET : privateKey, {
         expiresIn: '7d',
       });
       res.send({ token });
     })
     .catch(() => {
-      next(new UnauthorizedError('Authorization Error'));
+      next(new UnauthorizedError(invalidAccessMessage));
     });
 };

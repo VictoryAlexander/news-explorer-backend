@@ -45,7 +45,7 @@ const validateNewArticle = celebrate({
 
 const validateArticleId = celebrate({
   params: Joi.object().keys({
-    itemId: Joi.string().alphanum().length(24)
+    articleId: Joi.string().alphanum().length(24)
   })
 })
 

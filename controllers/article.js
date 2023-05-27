@@ -3,11 +3,12 @@ const ServerError = require('../utils/errors/ServerError');
 const BadRequestError = require('../utils/errors/BadRequestError');
 const ForbiddenError = require('../utils/errors/ForbiddenError');
 const NotFoundError = require('../utils/errors/NotFoundError');
+const { defaultErrorMessage, invalidNameMessage, invalidIdMessage, itemNotFoundMessage, invalidAccessMessage } = require('../utils/constants');
 
-const defaultError = new ServerError('An error has occurred on the server.');
+const defaultError = new ServerError(defaultErrorMessage);
 
 module.exports.getArticles = (req, res, next) => {
-  article.find({})
+  article.find({owner: req.user._id})
     .then(items => res.send(items))
     .catch(() => next(defaultError));
 };
@@ -18,6 +19,7 @@ module.exports.createArticle = (req, res, next) => {
 
   article.create({ source, title, text, link, image, date, keyword, owner })
     .then(item => res.send({
+      _id: item._id,
       source: item.source,
       title: item.title,
       text: item.text,
@@ -28,14 +30,14 @@ module.exports.createArticle = (req, res, next) => {
     }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return next(new BadRequestError('Invalid Name'));
+        return next(new BadRequestError(invalidNameMessage));
       }
       return next(defaultError);
     });
 };
 
 module.exports.deleteArticle = (req, res, next) => {
-  article.findById(req.params.itemId)
+  article.findById(req.params.articleId)
     .orFail()
     .then((item) => {
       if (!item.owner.equals(req.user._id)) {
@@ -47,13 +49,13 @@ module.exports.deleteArticle = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return next(new BadRequestError('Invalid Id'));
+        return next(new BadRequestError(invalidIdMessage));
       }
       if (err.name === 'DocumentNotFoundError') {
-        return next(new NotFoundError('Item ID not found'));
+        return next(new NotFoundError(itemNotFoundMessage));
       }
       if (err.message === 'Invalid Access') {
-        return next(new ForbiddenError('Invalid authorization'));
+        return next(new ForbiddenError(invalidAccessMessage));
       }
       return next(defaultError);
     });
