@@ -6,8 +6,8 @@ const BadRequestError = require('../utils/errors/BadRequestError');
 const ConflictError = require('../utils/errors/ConflictError');
 const NotFoundError = require('../utils/errors/NotFoundError');
 const UnauthorizedError = require('../utils/errors/UnauthorizedError');
-const privateKey = require('../utils/config');
-const { defaultErrorMessage, userNotFoundMessage, invalidIdMessage, userExistsMessage, invalidAccessMessage } = require('../utils/constants');
+const { privateKey } = require('../utils/config');
+const { defaultErrorMessage, userNotFoundMessage, invalidIdMessage, userExistsMessage, invalidAccessMessage, incorrectCredentialsMessage } = require('../utils/constants');
 
 const defaultError = new ServerError(defaultErrorMessage);
 const { NODE_ENV, JWT_SECRET } = process.env;
@@ -70,7 +70,11 @@ module.exports.login = (req, res, next) => {
       });
       res.send({ token });
     })
-    .catch(() => {
-      next(new UnauthorizedError(invalidAccessMessage));
+    .catch((err) => {
+      if (err.message === 'Invalid Credentials') {
+        next(new UnauthorizedError(incorrectCredentialsMessage));
+      } else {
+        next(new UnauthorizedError(invalidAccessMessage));
+      }
     });
 };

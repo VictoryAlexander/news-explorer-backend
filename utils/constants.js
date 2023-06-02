@@ -6,6 +6,7 @@ const invalidAccessMessage = 'Invalid authorization';
 const userNotFoundMessage = 'User not found';
 const userExistsMessage = 'User Already Exists';
 const routerNotFoundMessage = 'Router not found';
+const incorrectCredentialsMessage = 'Incorrect email or password';
 
 module.exports = {
   defaultErrorMessage,
@@ -15,5 +16,6 @@ module.exports = {
   invalidAccessMessage,
   userNotFoundMessage,
   userExistsMessage,
-  routerNotFoundMessage
+  routerNotFoundMessage,
+  incorrectCredentialsMessage
 }
