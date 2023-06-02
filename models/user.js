@@ -28,12 +28,12 @@ user.statics.findUserByCredentials = function findUserByCredentials (email, pass
   return this.findOne({ email }).select('+password')
   .then((userInfo) => {
     if (!userInfo) {
-      return Promise.reject(new Error('Incorrect email or password'));
+      return Promise.reject(new Error('Invalid Credentials'));
     }
     return bcrypt.compare(password, userInfo.password)
       .then((matched) => {
         if (!matched) {
-          return Promise.reject(new Error('Incorrect email or password'));
+          return Promise.reject(new Error('Invalid Credentials'));
         }
         return userInfo;
       })
